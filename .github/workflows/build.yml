@@ -30,15 +30,9 @@ jobs:
           else
             echo ".env file already exists. Skipping the copy step."
           fi
+          echo "VITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }}" >> .env
+          echo "VITE_WEATHER_KEY added to .env."
 
-          # 使用 sed 更新或追加 VITE_WEATHER_KEY
-          if grep -q "^VITE_WEATHER_KEY=" .env; then
-            sed -i'' -e "s/^VITE_WEATHER_KEY=.*/VITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }}/" .env
-            echo "VITE_WEATHER_KEY updated in .env."
-          else
-            echo "VITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }}" >> .env
-            echo "VITE_WEATHER_KEY added to .env."
-          fi
       # 安装项目依赖
       - name: Install Dependencies
         run: npm install
