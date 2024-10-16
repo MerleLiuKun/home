@@ -1,5 +1,4 @@
 # Dev 分支推送部署预览
-## 仅部署 Win 端
 name: Build Dev
 
 on:
@@ -11,7 +10,7 @@ on:
 jobs:
   release:
     name: Build Website
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       # 检出 Git 仓库
@@ -25,12 +24,21 @@ jobs:
       # 复制环境变量文件
       - name: Copy .env.example
         run: |
-          if (-not (Test-Path .env)) {
-            Copy-Item .env.example .env
-          } else {
-            Write-Host ".env file already exists. Skipping the copy step."
-          }
-          echo VITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }} >> .env
+          if [ ! -f .env ]; then
+            cp .env.example .env
+            echo ".env file created from .env.example."
+          else
+            echo ".env file already exists. Skipping the copy step."
+          fi
+
+          # 使用 sed 更新或追加 VITE_WEATHER_KEY
+          if grep -q "^VITE_WEATHER_KEY=" .env; then
+            sed -i'' -e "s/^VITE_WEATHER_KEY=.*/VITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }}/" .env
+            echo "VITE_WEATHER_KEY updated in .env."
+          else
+            echo "VITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }}" >> .env
+            echo "VITE_WEATHER_KEY added to .env."
+          fi
       # 安装项目依赖
       - name: Install Dependencies
         run: npm install
