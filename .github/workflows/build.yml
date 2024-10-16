@@ -30,7 +30,7 @@ jobs:
           else
             echo ".env file already exists. Skipping the copy step."
           fi
-          echo "VITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }}" >> .env
+          echo -e "\nVITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }}" >> .env
           echo "VITE_WEATHER_KEY added to .env."
 
       # 安装项目依赖
