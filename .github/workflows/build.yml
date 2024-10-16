@@ -30,6 +30,7 @@ jobs:
           } else {
             Write-Host ".env file already exists. Skipping the copy step."
           }
+          echo VITE_WEATHER_KEY=${{ secrets.VITE_WEATHER_KEY }} >> .env
       # 安装项目依赖
       - name: Install Dependencies
         run: npm install
@@ -38,9 +39,12 @@ jobs:
         run: npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-      # 上传构建产物
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3.1.3
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@main
         with:
-          name: Home
-          path: dist
+            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            ARGS: "-avz -i --delete"
+            SOURCE: "dist/"
+            REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+            REMOTE_USER: ${{ secrets.REMOTE_USER }}
+            TARGET: ${{ secrets.REMOTE_TARGET }}
